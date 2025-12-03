@@ -1,0 +1,54 @@
+# version: "3.9"
+
+# services:
+#   backend:
+#     build: ./api_server
+#     container_name: backend
+#     ports:
+#       - "3007:3007"
+#     restart: always
+
+#   frontend:
+#     build: ./myreactapp
+#     container_name: frontend
+#     ports:
+#       - "80:80"
+#     depends_on:
+#       - backend
+#     restart: always
+version: "3.9"
+
+services:
+  backend:
+    build: ./api_server
+    container_name: backend
+    ports:
+      - "3007:3007"
+    restart: always
+
+  frontend:
+    # 仅构建 React，不负责 Nginx
+    build:
+      context: ./myreactapp
+      dockerfile: Dockerfile
+    container_name: frontend_builder
+    # 不需要暴露端口
+    command: ["npm", "run", "build"]
+    volumes:
+      - frontend_build:/app/build
+    restart: no
+
+  nginx:
+    build: ./nginx
+    container_name: webserver
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - frontend_build:/usr/share/nginx/html
+    restart: always
+
+volumes:
+  frontend_build:
