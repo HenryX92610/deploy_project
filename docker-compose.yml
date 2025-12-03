@@ -20,7 +20,7 @@ version: "3.9"
 
 services:
   backend:
-    build: ./api_server
+    build: ./backend
     container_name: backend
     ports:
       - "3007:3007"
@@ -29,7 +29,7 @@ services:
   frontend:
     # 仅构建 React，不负责 Nginx
     build:
-      context: ./myreactapp
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend_builder
     # 不需要暴露端口
